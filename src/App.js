@@ -1,3 +1,4 @@
+import SetTimeOut from "./SetTimeOut";
 import Control from "./Control";
 
 function App() {
@@ -5,7 +6,8 @@ function App() {
    
   return (
     <>
-      <Control />
+      {/* <Control /> */}
+      <SetTimeOut />
     </>
     
   );
