@@ -1,6 +1,7 @@
 // import SetTimeOut from "./SetTimeOut";
 // import Control from "./Control";
-import Counter from "./Counter";
+// import Counter from "./Counter";
+import Popup from "./Popup";
 
 
 function App() {
@@ -9,7 +10,8 @@ function App() {
     <>
       {/* <Control /> */}
       {/* <SetTimeOut /> */}
-      <Counter/>
+      {/* <Counter/> */}
+      <Popup/>
     </>
     
   );
