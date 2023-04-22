@@ -2,7 +2,7 @@
 // import Control from "./Control";
 // import Counter from "./Counter";
 // import Popup from "./Popup";
-import ProductListItem from "./ProductListItem"
+import ProdList from "./ProdList"
 
 
 function App() {
@@ -13,11 +13,7 @@ function App() {
       {/* <SetTimeOut /> */}
       {/* <Counter/> */}
       {/* <Popup/> */}
-      <div style={{display: "flex", gap: "10px"}}>
-        {<ProductListItem imgNo={1} productName="MAC OS" productPriceFormatted={"3,000,000원"} />}
-        {<ProductListItem imgNo={2} productName="MAC BOOK" productPriceFormatted={"4,100,000원"}/>}
-        {<ProductListItem imgNo={201} productName="MAC BOOK PRO" productPriceFormatted={"4,600,000원"}/>}
-      </div>
+      {<ProdList/>}
     </>
     
   );
