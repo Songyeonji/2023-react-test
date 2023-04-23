@@ -1,47 +1,23 @@
+import { useState, useRef } from "react";
 import NoRecord from "./NoRecord";
 
+let AppCallCount = 0;
+
 function App() {
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const form = e.target;
+  AppCallCount++;
+  console.log(`App : ${AppCallCount}`);
 
-    form.name.value = form.name.value.trim();
-
-    if (form.name.value.length == 0) {
-      alert("이름을 입력해주세요.");
-      form.name.focus();
-      return;
-    }
-
-    form.age.value = form.age.value.trim();
-
-    if (form.age.value.length == 0) {
-      alert("나이를 입력해주세요.");
-      form.age.focus();
-      return;
-    }
-
-    const name = form.name.value;
-    const age = form.age.valueAsNumber;
-
-    alert(`이름 : ${name}, 나이 : ${age}`);
-
-    form.name.value = "";
-    form.age.value = "";
-
-    form.name.focus();
-  };
+  const [no1, setNo1] = useState(0);
+  const no2Ref = useRef(0);
 
   return (
     <>
-      <NoRecord />
-      <form onSubmit={onSubmit}>
-        <input type="text" name="name" placeholder="이름을 입력해주세요." />
-        <br />
-        <input type="number" name="age" placeholder="나이을 입력해주세요." />
-        <br />
-        <input type="submit" value="전송" />
-      </form>
+      <button onClick={() => setNo1(no1 + 1)}>숫자 1 증가 : {no1}</button>
+      <button onClick={() => no2Ref.current++}>
+        숫자 2 증가 : {no2Ref.current}
+      </button>
+   
     </>
   );
 }
+export default App;
