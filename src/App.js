@@ -1,69 +1,32 @@
+import React, { useEffect, useState, useRef } from "react";
 
-import React, { useState } from "react";
-import classnames from "https://cdn.skypack.dev/classnames";
-
-function NotifyOnce({ children }) {
-  const [visible, setVisible] = useState(false);
-  const [workDone, setWorkDone] = useState(false);
-
-  if (workDone == false) {
-    setTimeout(function () {
-      setVisible(true);
-    }, 1000);
-
-    setTimeout(function () {
-      setVisible(false);
-    }, 3000);
-
-    setWorkDone(true);
-  }
-
-  return (
-    <div
-      className={classnames(
-        "fixed transition-all right-[10px]",
-        {
-          "top-[-60px]": !visible,
-        },
-        {
-          "top-[10px]": visible,
-        }
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Alert({ color: color_, children }) {
-  const color = color_ ?? "white";
-
-  return (
-    <div className="alert alert-info shadow-lg">
-      <div className={`text-[${color}]`}>
-        <span>
-          <i className="fa-solid fa-circle-info"></i>
-        </span>
-        <span>{children}</span>
-      </div>
-    </div>
-  );
-}
+let AppCallCount = 0;
 
 function App() {
+  const inputNameRef = useRef(null);
+  const inputAgeRef = useRef(null);
+  const [no, setNo] = useState(0);
 
 
 
-  return (
+  useEffect( () => {
+    inputNameRef.current.focus();
+
+  }, [] );
+
+
+    return (
     <>
-      <NotifyOnce>
-        <Alert>안녕 대언오빠</Alert>
-      </NotifyOnce>
-      <div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea, amet
-        mollitia impedit porro asperiores quidem voluptatum cumque saepe iusto
-        laudantium velit ad maiores nemo dolore ipsa delectus fuga ab quam.
-      </div>
+    <input ref={inputNameRef} type="text" placeholder="이름" className="input input-bordered" />
+    <hr />
+    <input ref={inputAgeRef} type="number" placeholder="나이" className="input input-bordered" />
+    <hr />
+      <button className ="btn btn-outline" onClick={() => {
+        setNo (no + 1);
+        inputAgeRef.current.focus();
+        }}>
+        증가 : {no} 
+      </button>
     </>
   );
 }
