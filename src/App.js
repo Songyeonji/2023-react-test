@@ -1,43 +1,67 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+
+function isPrimeNumber(no) {
+  for (let i = 2; i < no; i++) {
+    if (i * i > no) {
+      break;
+    }
+    if (no % i == 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function getPrimeNumbers(max) {
+  const primeNumbers = [];
+
+  for (let i = 2; i <= max; i++) {
+    if (isPrimeNumber(i)) {
+      primeNumbers.push(i);
+    }
+  }
+
+  return primeNumbers;
+}
+
+function getPrimeNumbersCount(max) {
+  return getPrimeNumbers(max).length;
+}
+
+let PrimeNosCountCallcount = 0;
+function PrimeNosCount({max}) {
+  PrimeNosCountCallcount++;
+  console.log (`P PrimeNosCountCallcount :${ PrimeNosCountCallcount}`);
+  const count = useMemo(() => getPrimeNumbersCount(max), [max]);
+
+
+  return <div style = {{border : "10px soilid black", padding : 50}}>
+    {max}사이에 존재하는 소스의 개수는 {count}개 이다.
+  </div>
+}
 
 let AppCallCount = 0;
 
 function App() {
   AppCallCount++;
-  console.log(`AppCallCount :  ${AppCallCount}`);
+  console.log(`AppCallCount : ${AppCallCount}`);
 
   const [no, setNo] = useState(0);
-  const [isDark, setIsDark] = useState(false);
 
-  useEffect(() => {
-    const html = document.getElementsByTagName("html")[0];
-
-    if (isDark) {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
-  }, [isDark]);
 
     return (
     <>
-      <div>
-        <button className="btn btn-outline" onClick={() => setNo(no + 1)}>
-        APP 버튼 : {no}
-        </button>
-        <button className="btn btn-outline" onClick={() => setIsDark(!isDark)}>
-          테마토글
-        </button>
-        <hr />
-        <div>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas
-          error mollitia ad veritatis delectus itaque eaque minus perspiciatis
-          quae atque id, minima praesentium ullam quidem enim alias. Placeat,
-          obcaecati corporis.
-        </div>
+      <PrimeNosCount max={100}/>
+      <hr />
+      <PrimeNosCount max={200}/>
+      <hr />
+      <PrimeNosCount max={300}/>
+      <hr />
+      <PrimeNosCount max={100000}/>
+      <hr />
+      <button onClick={() => setNo (no +1)}>버튼 :{no}</button>
 
-        <h1 className="color-primary">안녕, 반가워</h1>
-      </div>
     </>
   );
 }
