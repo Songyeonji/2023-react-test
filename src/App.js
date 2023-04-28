@@ -1,67 +1,48 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 
-function isPrimeNumber(no) {
-  for (let i = 2; i < no; i++) {
-    if (i * i > no) {
-      break;
-    }
-    if (no % i == 0) {
-      return false;
-    }
-  }
+let SubCallCount = 0;
 
-  return true;
+function Sub({no1,no2, calculateFunc}) {
+  SubCallCount++;
+  console.log(`SubCallCount : ${SubCallCount}`);
+
+
+    return (
+    <>
+    <div style={{border : " 10px soild red", padding : 10}}>
+      입력 : {no1}, {no2}
+      <br />
+      결과 : {calculateFunc(no1, no2)}
+    </div>
+
+    </>
+  );
 }
 
-function getPrimeNumbers(max) {
-  const primeNumbers = [];
+const MemoizedSub = React.memo(Sub);
 
-  for (let i = 2; i <= max; i++) {
-    if (isPrimeNumber(i)) {
-      primeNumbers.push(i);
-    }
-  }
-
-  return primeNumbers;
-}
-
-function getPrimeNumbersCount(max) {
-  return getPrimeNumbers(max).length;
-}
-
-let PrimeNosCountCallcount = 0;
-function PrimeNosCount({max}) {
-  PrimeNosCountCallcount++;
-  console.log (`P PrimeNosCountCallcount :${ PrimeNosCountCallcount}`);
-  const count = useMemo(() => getPrimeNumbersCount(max), [max]);
-
-
-  return <div style = {{border : "10px soilid black", padding : 50}}>
-    {max}사이에 존재하는 소스의 개수는 {count}개 이다.
-  </div>
-}
 
 let AppCallCount = 0;
+
 
 function App() {
   AppCallCount++;
   console.log(`AppCallCount : ${AppCallCount}`);
 
-  const [no, setNo] = useState(0);
+  const [no1, setNo1] = useState(0);
+  const [no2, setNo2] = useState(0);
+
+  const calculateFunc = useCallback( (a, b) => a + b + no1, [no1]);
+
 
 
     return (
     <>
-      <PrimeNosCount max={100}/>
-      <hr />
-      <PrimeNosCount max={200}/>
-      <hr />
-      <PrimeNosCount max={300}/>
-      <hr />
-      <PrimeNosCount max={100000}/>
-      <hr />
-      <button onClick={() => setNo (no +1)}>버튼 :{no}</button>
-
+      <button onClick={() => setNo1 (no1 +1)}>버튼1 :{no1}</button>
+      <hr/>
+      <button onClick={() => setNo2 (no2 +1)}>버튼2 :{no2}</button>
+      <hr/>
+      <MemoizedSub no1={10} no2= {20} calculateFunc={calculateFunc}/>
     </>
   );
 }
