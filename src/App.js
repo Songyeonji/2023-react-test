@@ -5,6 +5,8 @@ import Order from "./Order";
 
 function App() {
   const fruits = ["사과", "바나나", "코코넛"];
+  const [selectedGender, setSelectedGender] = useState("W");
+
   const [selecteds, setSelecteds] = useState(new Array(fruits.length).fill(true));
   
   const toggleFruitSelected = (index) => {
@@ -32,6 +34,27 @@ function App() {
         <hr />
         선택 과일 : {selectedsFruits.join(",")}
       </div>
+      <hr/>
+      <h1>라디오 버튼</h1>
+      <label>
+        <input 
+        type="radio" 
+        name="gender" 
+        onChange={() => setSelectedGender ("M")} 
+        checked = {selectedGender == "M"} 
+        />
+        남성
+      </label>
+      <label>
+        <input 
+        type="radio" 
+        name="gender" 
+        onChange={(e) => setSelectedGender ("W")} 
+        checked = {selectedGender == "W"} 
+        />
+        여성
+      </label>
+      <div> 현재 값 : {selectedGender} </div>
     </>
   );
 }
