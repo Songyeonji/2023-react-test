@@ -1,112 +1,175 @@
-import React, { useState, useMemo }  from "react";
-import { useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 
-function OrderMainFood({mianFoodCount, setMainFoodCount}) {
-  return(
+function OrderMainFood({ mainFoodCount, setMainFoodCount }) {
+  return (
     <>
-      <h2>메인 (수량 : {mianFoodCount})</h2>
+      <h2>메인 (수량 : {mainFoodCount})</h2>
       <div>
-        <button onClick={() => setMainFoodCount(mianFoodCount + 1)}>증가</button>
-        <button onClick={() => setMainFoodCount(mianFoodCount == 1 ? 1 : mianFoodCount - 1)}>
+        <button onClick={() => setMainFoodCount(mainFoodCount + 1)}>
+          증가
+        </button>
+        <button
+          onClick={() =>
+            setMainFoodCount(mainFoodCount == 1 ? 1 : mainFoodCount - 1)
+          }
+        >
           감소
         </button>
       </div>
     </>
-  )
+  );
 }
 
-const MemoizedOrderMainFood  = React.memo(OrderMainFood);
+const MemoizedOrderMainFood = React.memo(OrderMainFood);
 
 function OrderOptions({
-  selectedCount, 
-  options, 
-  toggleAllChecked, 
-  btnAllChecked, 
+  selectedCount,
+  options,
+  toggleAllChecked,
+  btnAllChecked,
   optionCheckeds,
   toggleOptionCheck,
 }) {
-  return(
+  return (
     <>
-      <h2>옵션 ({selectedCount} / {options.length})</h2>
-      <span onClick={toggleAllChecked} style={{paddingLeft:30, userSelect:'none'}}>{btnAllChecked ? '[v]' : '[ ]'} 전체선택</span>
+      <h2>
+        옵션 ({selectedCount} / {options.length})
+      </h2>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={btnAllChecked}
+          onChange={toggleAllChecked}
+        />
+        전체선택
+      </label>
+
       <ul>
         {options.map((option, index) => (
-          <li style={{userSelect:'none', cursor:'pointer'}} key={option} onClick={() => toggleOptionCheck(index)}>
-            {optionCheckeds[index] ? "[v]" : "[ ]"}
-            {option}
+          <li style={{ userSelect: "none", cursor: "pointer" }} kye={option}>
+            <label>
+              <input
+                type="checkbox"
+                checked={optionCheckeds[index]}
+                onChange={() => toggleOptionCheck(index)}
+              />
+              {option}
+            </label>
           </li>
         ))}
       </ul>
     </>
-  )
+  );
 }
 
-const MemoizedOrderOptions  = React.memo(OrderOptions);
+const MemoizedOrderOptions = React.memo(OrderOptions);
+
+function OderDelivery({ deliveryType, setDeliveryType }) {
+  return (
+    <>
+      <h2>배달옵션</h2>
+      <label>
+        <input
+          type="radio"
+          name="delivery-type"
+          checked={deliveryType == "직접수령"}
+          onChange={() => setDeliveryType("직접수령")}
+        />
+        직접수령
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="delivery-type"
+          checked={deliveryType == "배달"}
+          onChange={() => setDeliveryType("배달")}
+        />
+        배달
+      </label>
+    </>
+  );
+}
+
+const MemoizedOderDelivery = React.memo(OderDelivery);
 
 export default function Order() {
-  const [mianFoodCount, setMainFoodCount] = useState(1);
+  const [mainFoodCount, setMainFoodCount] = useState(1);
 
   const options = [
     "사이다",
     "콜라",
+    "레몬에이드",
     "머스타드 소스",
     "랜치 소스",
     "칠리 소스",
-  ];  
-  // new Array(options.length).fill(false)
-  // new Array(6).fill(false)
-  // [,,,,,].fill(false)
-  // [false,false,false,false,false,false)
-  const [optionCheckeds, setOptionCheckeds] = useState(new Array(options.length).fill(false));
-  
+  ];
+
+  const [optionCheckeds, setOptionCheckeds] = useState(
+    new Array(options.length).fill(false)
+  );
+
   const toggleOptionCheck = useCallback(
     (index) => {
-    const newOptionCheckeds = optionCheckeds.map((el, _index) => _index == index ? !el : el);
-    setOptionCheckeds(newOptionCheckeds);
-  }, [optionCheckeds]
-);
+      const newOptionCheckeds = optionCheckeds.map((el, _index) =>
+        _index == index ? !el : el
+      );
+      setOptionCheckeds(newOptionCheckeds);
+    },
+    [optionCheckeds]
+  );
 
-  const btnAllChecked = useMemo(() => optionCheckeds.every((el) => el), [optionCheckeds]);
-  const selectedCount = useMemo(() => optionCheckeds.filter(el => el).length, [optionCheckeds]);
-  
+  const btnAllChecked = useMemo(
+    () => optionCheckeds.every((el) => el),
+    [optionCheckeds]
+  );
+  const selectedCount = useMemo(
+    () => optionCheckeds.filter((el) => el).length,
+    [optionCheckeds]
+  );
+
   const toggleAllChecked = useCallback(() => {
-    if ( btnAllChecked ) {
-      // 전부 체크해제 해야함
+    if (btnAllChecked) {
+      // 전부 체크를 해제 해야함
       const newOptionCheckeds = optionCheckeds.map((el) => false);
       setOptionCheckeds(newOptionCheckeds);
-    }
-    else {
-      // 전부 체크 해야함
+    } else {
+      // 전부 체크를 해야함
       const newOptionCheckeds = optionCheckeds.map((el) => true);
       setOptionCheckeds(newOptionCheckeds);
-    } 
-}, [optionCheckeds]);
+    }
+  }, [optionCheckeds]);
+
+  const [deliveryType, setDeliveryType] = useState("직접수령");
 
   return (
     <>
       <h1>음식주문</h1>
 
-      <MemoizedOrderMainFood 
-        setMainFoodCount={setMainFoodCount} 
-        mianFoodCount={mianFoodCount}
+      <MemoizedOrderMainFood
+        setMainFoodCount={setMainFoodCount}
+        mainFoodCount={mainFoodCount}
       />
-      <MemoizedOrderOptions 
-        selectedCount ={selectedCount} 
+      <MemoizedOrderOptions
+        selectedCount={selectedCount}
         options={options}
-        toggleAllChecked={toggleAllChecked} 
-        btnAllChecked ={btnAllChecked}
+        toggleAllChecked={toggleAllChecked}
+        btnAllChecked={btnAllChecked}
         optionCheckeds={optionCheckeds}
         toggleOptionCheck={toggleOptionCheck}
       />
       <MemoizedOrderOptions
-        selectedCount ={selectedCount} 
+        selectedCount={selectedCount}
         options={options}
-        toggleAllChecked={toggleAllChecked} 
-        btnAllChecked ={btnAllChecked}
+        toggleAllChecked={toggleAllChecked}
+        btnAllChecked={btnAllChecked}
         optionCheckeds={optionCheckeds}
         toggleOptionCheck={toggleOptionCheck}
+      />
+      <MemoizedOderDelivery
+        deliveryType={deliveryType}
+        setDeliveryType={setDeliveryType}
       />
     </>
   );
 }
-
