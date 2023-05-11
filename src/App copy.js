@@ -96,7 +96,7 @@ function NewTodoForm({ todosState }) {
 
   return (
     <>
-           <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit}>
         <input
           autoComplete="off"
           type="text"
