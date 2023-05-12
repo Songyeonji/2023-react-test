@@ -16,7 +16,6 @@ html,
 body,
 #root {
   height: 100%;
-  margin-top: 40px;
 }
 /* 지마켓산스 폰트 적용 */
 html > body,

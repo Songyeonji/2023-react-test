@@ -12,11 +12,10 @@ function useTodosState() {
     const newTodo = {
       id,
       content: newContent,
-      regDate: dateToStr(new Date()),
+      regDate: dateToStr(new Date())
     };
 
-    setTodos((todos) => [...todos, newTodo]);
-
+    setTodos((todos) => [newTodo, ...todos]);
   };
 
   const modifyTodo = (index, newContent) => {
@@ -25,16 +24,18 @@ function useTodosState() {
     );
     setTodos(newTodos);
   };
+
   const removeTodo = (index) => {
     const newTodos = todos.filter((_, _index) => _index != index);
     setTodos(newTodos);
   };
+  
 
   return {
     todos,
     addTodo,
     modifyTodo,
-    removeTodo,
+    removeTodo
   };
 }
 
@@ -55,8 +56,9 @@ function App() {
     form.content.value = form.content.value.trim();
 
     if (form.content.value.length == 0) {
-      alert("할 일을 입력해주세요.");
+      alert("할일을 입력해주세요.");
       form.content.focus();
+
       return;
     }
 
@@ -65,19 +67,18 @@ function App() {
     form.content.focus();
   };
 
-
   return (
     <>
-      <AppBar position ="fixed">
+      <AppBar position="fixed">
         <Toolbar>
-          <div className="flex-1"> </div>
-          <span className="font-bod">YEON JI NOTE</span>
+          <div className="flex-1"></div>
+          <span className="font-bold">YEON JI NOTE</span>
           <div className="flex-1"></div>
         </Toolbar>
       </AppBar>
-
-      <form onSubmit={onSubmit} className="flex flex-col mt-5 px-5 gap-2">
-      <TextField
+      <Toolbar />
+      <form onSubmit={onSubmit} className="flex flex-col mt-4 px-4 gap-2">
+        <TextField
           minRows={3}
           maxRows={10}
           multiline
@@ -94,10 +95,10 @@ function App() {
           {todosState.todos.map((todo) => (
             <li key={todo.id} className="mt-10">
               <div className="flex gap-2">
-                <Chip label={`번호 : ${todo.id}`} variant="outlined" />
-                <Chip label={todo.regDate} color="primary" variant="outlined" />
+                <Chip label={`번호 : ${todo.id}`} variant="outlined" className="!pt-1" />
+                <Chip label={todo.regDate} color="primary" variant="outlined"  className="!pt-1" />
               </div>
-              <div className="mt-4 p-10 shadow rounded-[20px] whitespace-pre-wrap leading-relaxed">
+              <div className="mt-4 p-10 shadow rounded-[20px] whitespace-pre-wrap leading-relaxed hover:text-[color:var(--mui-color-primary-main)]">
                 {todo.content}
               </div>
             </li>
@@ -108,11 +109,24 @@ function App() {
   );
 }
 
+const muiThemePaletteKeys = [
+  "background",
+  "common",
+  "error",
+  "grey",
+  "info",
+  "primary",
+  "secondary",
+  "success",
+  "text",
+  "warning",
+];
 
-
+  
 export default App;
+// 유틸리티
 
-// 날짜 객체를 입력받아서 문장 (yyyy-mm-dd hh:mm:ss) 형태로 반환.
+// 날짜 객체 입력받아서 문장(yyyy-mm-dd hh:mm:ss)으로 반환한다.
 function dateToStr(d) {
   const pad = (n) => {
     return n < 10 ? "0" + n : n;
