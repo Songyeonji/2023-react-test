@@ -1,6 +1,6 @@
+import { useEffect } from "react";
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import App from "./App";
-import {useEffect} from "react";
 
 const muiThemePaletteKeys = [
   "background",
