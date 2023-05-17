@@ -44,12 +44,20 @@ function useTodosState() {
     const newTodos = todos.filter((_, _index) => _index != index);
     setTodos(newTodos);
   };
+  const removeTodoById = (id) => {
+    const index = todos.findIndex((todo) => todo.id == id);
+
+    if (index != -1) {
+      removeTodo(index);
+    }
+  };
 
   return {
     todos,
     addTodo,
     modifyTodo,
-    removeTodo
+    removeTodo,
+    removeTodoById,
   };
 }
 
@@ -108,7 +116,7 @@ function TodoListItem({ todo, index, todosState, openDrawer }) {
   );
 }
 
-function useTodoOptionDrawerStatus() {
+function useTodoOptionDrawerState() {
   const [todoId, setTodoId] = useState(null);
   const opened = useMemo(() => todoId !== null, [todoId]);
   const close = () => setTodoId(null);
@@ -118,65 +126,97 @@ function useTodoOptionDrawerStatus() {
     todoId,
     opened,
     close,
-    open
+    open,
   };
 }
 
-function TodoOptionDrawer({ status }) {
+function useEditTodoModalState() {
+  const [opened, setOpened] = useState(false);
+
+  const open = () => {
+    setOpened(true);
+  };
+
+  const close = () => {
+    setOpened(false);
+  };
+
+  return { opened, open, close };
+}
+
+function TodoOptionDrawer({ state, todosState }) {
+  const removeTodo = () => {
+    todosState.removeTodoById(state.todoId);
+    state.close();
+  };
+  const editTodoModalState = useEditTodoModalState();
+
   return (
     <>
       <SwipeableDrawer
         anchor={"bottom"}
         onOpen={() => {}}
-        open={status.opened}
-        onClose={status.close}
+        open={state.opened}
+        onClose={state.close}
       >
         <List className="!py-0">
           <ListItem className="!pt-6 !p-5">
             <span className="text-[color:var(--mui-color-primary-main)]">
-              {status.todoId}번
+              {state.todoId}번
             </span>
             <span>&nbsp;</span>
-            <span>할일에 대해서</span>
+            <span>할 일에 대해</span>
           </ListItem>
           <Divider />
-          <ListItem className="!pt-6 !p-5 !items-baseline" button>
-            <i class="fa-solid fa-trash-can"></i>
-            &nbsp;
-            <span>삭제</span>
-          </ListItem>
-          <ListItem className="!pt-6 !p-5 !items-baseline" button>
-            <i class="fa-solid fa-pen-to-square"></i>
-            &nbsp;
-            <span>수정</span>
-          </ListItem>
+          <ListItemButton
+            className="!pt-6 !p-5 !items-baseline"
+            onClick={editTodoModalState.open}
+          >
+            <i class="fa-regular fa-pen-to-square"></i>
+            &nbsp;수정
+          </ListItemButton>
+          <ListItemButton
+            className="!pt-6 !p-5 !items-baseline"
+            onClick={removeTodo}
+          >
+            <i class="fa-regular fa-trash-can"></i>
+            &nbsp;삭제
+          </ListItemButton>
         </List>
       </SwipeableDrawer>
+
+      <Modal
+        open={editTodoModalState.opened}
+        onClose={editTodoModalState.close}
+        className="flex justify-center items-center"
+      >
+        <div className="bg-white p-10 rounded-[20px]">안녕하세요</div>
+      </Modal>
     </>
   );
 }
 
 function TodoList({ todosState }) {
-  const todoOptionDrawerStatus = useTodoOptionDrawerStatus();
+  const todoOptionDrawerState = useTodoOptionDrawerState();
 
   return (
     <>
-      <TodoOptionDrawer status={todoOptionDrawerStatus} />
-      <div className="mt-4 px-4">
-        <ul>
-          {todosState.todos.map((todo, index) => (
-            <TodoListItem
-              key={todo.id}
-              todo={todo}
-              index={index}
-              todosState={todosState}
-              openDrawer={todoOptionDrawerStatus.open}
-            />
-          ))}
-        </ul>
-      </div>
-    </>
-  );
+    <TodoOptionDrawer state={todoOptionDrawerState} todosState={todosState} />
+    <div className="mt-4 px-4">
+      <ul>
+        {todosState.todos.map((todo, index) => (
+          <TodoListItem
+            key={todo.id}
+            todo={todo}
+            index={index}
+            todosState={todosState}
+            openDrawer={todoOptionDrawerState.open}
+          />
+        ))}
+      </ul>
+    </div>
+  </>
+);
 }
 
 function NewTodoForm({ todosState }) {
@@ -245,18 +285,7 @@ function App() {
   );
 }
 
-const muiThemePaletteKeys = [
-  "background",
-  "common",
-  "error",
-  "grey",
-  "info",
-  "primary",
-  "secondary",
-  "success",
-  "text",
-  "warning"
-];
+
   
 export default App;
 // 유틸리티
