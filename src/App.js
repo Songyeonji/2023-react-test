@@ -40,24 +40,52 @@ function useTodosState() {
     setTodos(newTodos);
   };
 
+  const modifyTodoById = (id, newContent) => {
+    const index = findTodoIndexById(id);
+
+    if (index == -1) {
+      return;
+    }
+
+    modifyTodo(index, newContent);
+  };
+
+
   const removeTodo = (index) => {
     const newTodos = todos.filter((_, _index) => _index != index);
     setTodos(newTodos);
   };
   const removeTodoById = (id) => {
-    const index = todos.findIndex((todo) => todo.id == id);
+    const index = findTodoIndexById(id);
 
     if (index != -1) {
       removeTodo(index);
     }
   };
 
+  const findTodoIndexById = (id) => {
+    return todos.findIndex((todo) => todo.id == id);
+  };
+
+  const findTodoById = (id) => {
+    const index = findTodoIndexById(id);
+
+    if (index == -1) {
+      return null;
+    }
+
+    return todos[index];
+  };
+
   return {
     todos,
     addTodo,
     modifyTodo,
+    modifyTodoById,
     removeTodo,
     removeTodoById,
+    findTodoIndexById,
+    findTodoById,
   };
 }
 
@@ -130,6 +158,60 @@ function useTodoOptionDrawerState() {
   };
 }
 
+function EditTodoModal({ state, todosState, todo, closeDrawer }) {
+  const close = () => {
+    state.close();
+    closeDrawer();
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    form.content.value = form.content.value.trim();
+
+    if (form.content.value.length == 0) {
+      alert("할 일을 입력해주세요.");
+      form.content.focus();
+      return;
+    }
+
+    todosState.modifyTodoById(todo.id, form.content.value);
+    close();
+  };
+
+  return (
+    <>
+      <Modal
+        open={state.opened}
+        onClose={state.close}
+        className="flex justify-center items-center"
+      >
+        <div className="bg-white p-10 rounded-[20px] w-full max-w-lg">
+          <form onSubmit={onSubmit} className="flex flex-col gap-2">
+            <TextField
+              minRows={3}
+              maxRows={10}
+              multiline
+              autoComplete="off"
+              name="content"
+              label="할 일을 입력해주세요."
+              variant="outlined"
+              defaultValue={todo?.content}
+            />
+
+            <Button type="submit" variant="contained">
+              수정
+            </Button>
+          </form>
+        </div>
+      </Modal>
+    </>
+  );
+}
+
+
 function useEditTodoModalState() {
   const [opened, setOpened] = useState(false);
 
@@ -146,13 +228,26 @@ function useEditTodoModalState() {
 
 function TodoOptionDrawer({ state, todosState }) {
   const removeTodo = () => {
+    if (
+      window.confirm(`${state.todoId}번 할 일을 삭제하시겠습니까?`) == false
+    ) {
+      return;
+    }
+
     todosState.removeTodoById(state.todoId);
     state.close();
   };
   const editTodoModalState = useEditTodoModalState();
+  const todo = todosState.findTodoById(state.todoId);
 
   return (
     <>
+      <EditTodoModal
+        state={editTodoModalState}
+        todosState={todosState}
+        todo={todo}
+        closeDrawer={state.close}
+      />
       <SwipeableDrawer
         anchor={"bottom"}
         onOpen={() => {}}
@@ -162,7 +257,7 @@ function TodoOptionDrawer({ state, todosState }) {
         <List className="!py-0">
           <ListItem className="!pt-6 !p-5">
             <span className="text-[color:var(--mui-color-primary-main)]">
-              {state.todoId}번
+              {todo?.id}번  
             </span>
             <span>&nbsp;</span>
             <span>할 일에 대해</span>
@@ -172,26 +267,18 @@ function TodoOptionDrawer({ state, todosState }) {
             className="!pt-6 !p-5 !items-baseline"
             onClick={editTodoModalState.open}
           >
-            <i class="fa-regular fa-pen-to-square"></i>
+          <i className="fa-regular fa-pen-to-square"></i>
             &nbsp;수정
           </ListItemButton>
           <ListItemButton
             className="!pt-6 !p-5 !items-baseline"
             onClick={removeTodo}
           >
-            <i class="fa-regular fa-trash-can"></i>
+            <i className="fa-regular fa-trash-can"></i>
             &nbsp;삭제
           </ListItemButton>
         </List>
       </SwipeableDrawer>
-
-      <Modal
-        open={editTodoModalState.opened}
-        onClose={editTodoModalState.close}
-        className="flex justify-center items-center"
-      >
-        <div className="bg-white p-10 rounded-[20px]">안녕하세요</div>
-      </Modal>
     </>
   );
 }
