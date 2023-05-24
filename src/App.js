@@ -25,18 +25,46 @@ import {
   useRecoilValue,
 } from "recoil";
 
+import { recoilPersist } from "recoil-persist";
+
+const { persistAtom: persistAtomTodos } = recoilPersist({
+  key: "persistAtomTodos",
+});
+
+const { persistAtom: persistAtomLastTodoId } = recoilPersist({
+  key: "persistAtomLastTodoId",
+});
+
 const Alert = React.forwardRef((props, ref) => {
   return <MuiAlert {...props} ref={ref} variant="filled" />;
 });
 
 const todosAtom = atom({
   key: "app/todosAtom",
-  default: [],
+  default: [
+    {
+      id: 3,
+      regDate: "2023-05-22",
+      content: "요리",
+    },
+    {
+      id: 2,
+      regDate: "2023-05-22",
+      content: "운동",
+    },
+    {
+      id: 1,
+      regDate: "2023-05-22",
+      content: "공부",
+    },
+  ],
+  effects_UNSTABLE: [persistAtomTodos],
 });
 
 const lastTodoIdAtom = atom({
   key: "app/lastTodoIdAtom",
-  default: 0,
+  default: 3,
+  effects_UNSTABLE: [persistAtomLastTodoId],
 });
 
 function useTodosState() {
@@ -436,12 +464,6 @@ function useNoticeSnackbarState() {
 export default function App() {
   const todosState = useTodosState();
   const noticeSnackbarState = useNoticeSnackbarState();
-
-  useEffect(() => {
-    todosState.addTodo("운동\n스트레칭\n유산소\n상체\n하체볼륨 트레이닝");
-    todosState.addTodo("명상");
-    todosState.addTodo("공부");
-  }, []);
 
   return (
     <>
