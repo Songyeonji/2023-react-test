@@ -23,6 +23,7 @@ import {
   useRecoilState,
   useSetRecoilState,
   useRecoilValue,
+  useResetRecoilState,
 } from "recoil";
 
 import { recoilPersist } from "recoil-persist";
@@ -217,8 +218,9 @@ function useTodoOptionDrawerState() {
   };
 }
 
-function EditTodoModal({ state, todo, closeDrawer, noticeSnackbarState }) {
+function EditTodoModal({ state, todo, closeDrawer }) {
   const todosState = useTodosState();
+  const noticeSnackbarState = useNoticeSnackbarState();
 
   const close = () => {
     state.close();
@@ -287,8 +289,9 @@ function useEditTodoModalState() {
   return { opened, open, close };
 }
 
-function TodoOptionDrawer({ state, noticeSnackbarState }) {
+function TodoOptionDrawer({ state }) {
   const todosState = useTodosState();
+  const noticeSnackbarState = useNoticeSnackbarState();
 
   const removeTodo = () => {
     if (
@@ -314,7 +317,6 @@ function TodoOptionDrawer({ state, noticeSnackbarState }) {
         state={editTodoModalState}
         todo={todo}
         closeDrawer={state.close}
-        noticeSnackbarState={noticeSnackbarState}
       />
       <SwipeableDrawer
         anchor={"bottom"}
@@ -351,16 +353,13 @@ function TodoOptionDrawer({ state, noticeSnackbarState }) {
   );
 }
 
-function TodoList({ noticeSnackbarState }) {
+function TodoList() {
   const todosState = useTodosState();
   const todoOptionDrawerState = useTodoOptionDrawerState();
 
   return (
     <>
-      <TodoOptionDrawer
-        state={todoOptionDrawerState}
-        noticeSnackbarState={noticeSnackbarState}
-      />
+      <TodoOptionDrawer state={todoOptionDrawerState} />
       <div className="mt-4 px-4">
         <ul>
           {todosState.todos.map((todo, index) => (
@@ -377,8 +376,9 @@ function TodoList({ noticeSnackbarState }) {
   );
 }
 
-function NewTodoForm({ noticeSnackbarState }) {
+function NewTodoForm() {
   const todosState = useTodosState();
+  const noticeSnackbarState = useNoticeSnackbarState();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -420,7 +420,9 @@ function NewTodoForm({ noticeSnackbarState }) {
   );
 }
 
-function NoticeSnackbar({ state }) {
+function NoticeSnackbar() {
+  const state = useNoticeSnackbarState();
+
   return (
     <>
       <Snackbar
@@ -434,21 +436,37 @@ function NoticeSnackbar({ state }) {
   );
 }
 
+const noticeSnackbarInfoAtom = atom({
+  key: "app/noticeSnackbarInfoAtom",
+  default: {
+    opened: false,
+    autoHideDuration: 0,
+    severity: "",
+    msg: "",
+  },
+});
+
 function useNoticeSnackbarState() {
-  const [opened, setOpened] = useState(false);
-  const [autoHideDuration, setAutoHideDuration] = useState(null);
-  const [severity, setSeverity] = useState(null);
-  const [msg, setMsg] = useState(null);
+  const [noticeSnackbarInfo, setNoticeSnackbarInfo] = useRecoilState(
+    noticeSnackbarInfoAtom
+  );
+
+  const opened = noticeSnackbarInfo.opened;
+  const autoHideDuration = noticeSnackbarInfo.autoHideDuration;
+  const severity = noticeSnackbarInfo.severity;
+  const msg = noticeSnackbarInfo.msg;
 
   const open = (msg, severity = "success", autoHideDuration = 6000) => {
-    setOpened(true);
-    setMsg(msg);
-    setSeverity(severity);
-    setAutoHideDuration(autoHideDuration);
+    setNoticeSnackbarInfo({
+      opened: true,
+      msg,
+      severity,
+      autoHideDuration,
+    });
   };
 
   const close = () => {
-    setOpened(false);
+    setNoticeSnackbarInfo({ ...noticeSnackbarInfo, opened: false });
   };
 
   return {
@@ -462,12 +480,9 @@ function useNoticeSnackbarState() {
 }
 
 export default function App() {
-  const todosState = useTodosState();
-  const noticeSnackbarState = useNoticeSnackbarState();
-
   return (
     <>
-      <AppBar position="fixed" onClick={() => noticeSnackbarState.open("안녕")}>
+      <AppBar position="fixed">
         <Toolbar>
           <div className="flex-1"></div>
           <span className="font-bold">YEON JI NOTE</span>
@@ -476,9 +491,9 @@ export default function App() {
       </AppBar>
 
       <Toolbar />
-      <NoticeSnackbar state={noticeSnackbarState} />
-      <NewTodoForm noticeSnackbarState={noticeSnackbarState} />
-      <TodoList noticeSnackbarState={noticeSnackbarState} />
+      <NoticeSnackbar />
+      <NewTodoForm />
+      <TodoList />
     </>
   );
 }
