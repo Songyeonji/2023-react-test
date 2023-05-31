@@ -1,3 +1,4 @@
+import { produce } from "immer";
 import React, { useRef, useState } from "react";
 import {
   Routes,
@@ -32,7 +33,11 @@ function useTodosState() {
       regDate,
       content,
     };
-    const newTodos = [newTodo, ...todos];
+ //   const newTodos = [newTodo, ...todos];
+    const newTodos = produce(todos, (draft)=> {
+    draft.unshift(newTodo);
+  });
+
     setTodos(newTodos);
   };
 
@@ -50,8 +55,11 @@ function useTodosState() {
     const index = findIndexById(id);
 
     if (index == -1) return;
+    const newTodos = produce(todos, (draft)=> {
+      draft.splice(index, 1);
+    })
 
-    const newTodos = todos.filter((_, _index) => index != _index);
+    // const newTodos = todos.filter((_, _index) => index != _index);
     setTodos(newTodos);
   };
 
@@ -59,10 +67,14 @@ function useTodosState() {
     const index = findIndexById(id);
 
     if (index == -1) return;
-
-    const newTodos = todos.map((todo, _index) =>
-      index == _index ? { ...todo, content } : todo
-    );
+//기존 ㅍ방식
+    // const newTodos = todos.map((todo, _index) =>
+    //   index == _index ? { ...todo, content } : todo
+    // );
+    const newTodos= produce(todos, (draft) => {
+      draft[index].content = content
+    });
+    
     setTodos(newTodos);
   };
 
